@@ -65,8 +65,15 @@ class video(Resource):
         return (video, 201)
 
     # DELETE method for deleting a video
-    def delete(self, video_id):
-        return ("Video deleted at http://localhost:5000/video/" + str(video_id))
+        def delete(self, video_id):
+        result = videoModel.query.filter_by(id=video_id).first()
+        if not result:
+            abort(404, message="Video with ID {} doesn't exist".format(video_id))
+
+        db.session.delete(result)
+        db.session.commit()
+        
+        return {"message": "Video deleted", "video_id": video_id}, 200
 
 
 # Adding the video resource to the API
